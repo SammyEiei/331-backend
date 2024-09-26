@@ -1,28 +1,21 @@
 package se331.lab.rest.entity;
+
 import jakarta.persistence.*;
 import lombok.*;
 
 import java.util.List;
-
 @Data
 @Builder
 @Entity
 @NoArgsConstructor
 @AllArgsConstructor
-public class Event {
+public class Participant {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @EqualsAndHashCode.Exclude
     Long id;
-    String category;
-    String title;
-    String description;
-    String location;
-    String date;
-    String time;
-    Boolean petAllowed;
+    String name;
+    String telNo;
     @ManyToOne
-    Organizer organizer;
-    @ManyToMany(mappedBy = "eventHistory")
-    List<Participant> participants;
+    List<Event> eventHistory;
 }

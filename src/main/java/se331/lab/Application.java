@@ -19,7 +19,7 @@ public class Application {
             public void addCorsMappings(CorsRegistry registry) {
                 registry.addMapping("/**")  // Apply CORS to all endpoints
                         .allowedOrigins("http://127.0.0.1:5173", "http://localhost:5173")
-                        .exposedHeaders("x-total-count");
+                           .exposedHeaders("x-total-count");
 
 //
             }
