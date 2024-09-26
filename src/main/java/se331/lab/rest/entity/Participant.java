@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import lombok.*;
 
 import java.util.List;
+
 @Data
 @Builder
 @Entity
@@ -14,8 +15,10 @@ public class Participant {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @EqualsAndHashCode.Exclude
     Long id;
+
     String name;
     String telNo;
-    @ManyToOne
+
+    @ManyToMany(mappedBy = "participants")
     List<Event> eventHistory;
 }

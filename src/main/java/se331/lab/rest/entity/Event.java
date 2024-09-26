@@ -23,6 +23,11 @@ public class Event {
     Boolean petAllowed;
     @ManyToOne
     Organizer organizer;
-    @ManyToMany(mappedBy = "eventHistory")
+    @ManyToMany
+    @JoinTable(
+            name = "event_participant",
+            joinColumns = @JoinColumn(name = "event_id"),
+            inverseJoinColumns = @JoinColumn(name = "participant_id")
+    )
     List<Participant> participants;
 }
