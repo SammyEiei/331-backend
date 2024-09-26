@@ -1,5 +1,6 @@
 package se331.lab.rest.config;
 
+import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.context.ApplicationListener;
@@ -22,6 +23,7 @@ public class InitApp implements ApplicationListener<ApplicationReadyEvent> {
 
 
     @Override
+    @Transactional
     public void onApplicationEvent(ApplicationReadyEvent applicationReadyEvent) {
 //        eventRepository.save(Event.builder()
         Organizer org1,org2,org3;
