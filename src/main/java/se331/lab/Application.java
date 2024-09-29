@@ -12,6 +12,7 @@ public class Application {
     public static void main(String[] args) {
         SpringApplication.run(Application.class, args);
     }
+
     @Bean
     public WebMvcConfigurer corsConfigurer() {
         return new WebMvcConfigurer() {
@@ -19,11 +20,10 @@ public class Application {
             public void addCorsMappings(CorsRegistry registry) {
                 registry.addMapping("/**")  // Apply CORS to all endpoints
                         .allowedOrigins("http://127.0.0.1:5173", "http://localhost:5173")
-                           .exposedHeaders("x-total-count");
-
-//
+                        .allowedMethods("GET", "POST", "PUT", "DELETE")  // Allow specific methods
+                        .allowCredentials(true)  // Allow credentials like cookies
+                        .exposedHeaders("x-total-count", "Authorization", "Content-Length");  // Expose more headers
             }
         };
     }
-
 }
