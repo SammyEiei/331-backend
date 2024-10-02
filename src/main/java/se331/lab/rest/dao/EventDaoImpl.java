@@ -1,6 +1,7 @@
 package se331.lab.rest.dao;
 
 import jakarta.annotation.PostConstruct;
+import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Profile;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -10,14 +11,17 @@ import se331.lab.rest.entity.Event;
 
 import java.util.ArrayList;
 import java.util.List;
+
 @Repository
-@Profile("manual")
+@Profile("manual-event")
+@RequiredArgsConstructor
 public class EventDaoImpl implements EventDao {
     List<Event> eventList;
 
     @PostConstruct
     public void init() {
         eventList = new ArrayList<>();
+
         eventList.add(Event.builder()
                 .id(123L)
                 .category("animal welfare")
@@ -28,6 +32,7 @@ public class EventDaoImpl implements EventDao {
                 .time("12:00")
                 .petAllowed(true)
                 .build());
+
         eventList.add(Event.builder()
                 .id(456L)
                 .category("food")
@@ -39,27 +44,49 @@ public class EventDaoImpl implements EventDao {
                 .petAllowed(true)
                 .build());
 
-        // Add the rest of the events that are the same as in the db.json file
+        // Adding the rest of the events
         eventList.add(Event.builder()
-                .id(789L)
+                .id(5928101L)
+                .category("animal welfare")
+                .title("Cat Adoption Day")
+                .description("Find your new feline friend at this event.")
+                .location("Meow Town")
+                .date("January 28, 2022")
+                .time("12:00")
+                .petAllowed(true)
+                .build());
+
+        eventList.add(Event.builder()
+                .id(4582797L)
+                .category("food")
+                .title("Community Gardening")
+                .description("Join us as we tend to the community edible plants.")
+                .location("Flora City")
+                .date("March 14, 2022")
+                .time("10:00")
+                .petAllowed(true)
+                .build());
+
+        eventList.add(Event.builder()
+                .id(8419988L)
                 .category("sustainability")
                 .title("Beach Cleanup")
                 .description("Help pick up trash along the shore.")
-                .location("Sandy Shores")
-                .date("April 22, 2022")
-                .time("9:00")
+                .location("Playa Del Carmen")
+                .date("July 22, 2022")
+                .time("11:00")
                 .petAllowed(false)
                 .build());
 
         eventList.add(Event.builder()
-                .id(1001L)
-                .category("animal welfare")
-                .title("Dog Adoption Day")
-                .description("Find your new canine friend at this event.")
-                .location("Woof Town")
-                .date("August 28, 2022")
-                .time("12:00")
-                .petAllowed(true)
+                .id(8175648L)
+                .category("sport")
+                .title("Swimming")
+                .description("Let's be the first who can swim in the ocean.")
+                .location("Phuket")
+                .date("July 12, 2022")
+                .time("15:00")
+                .petAllowed(false)
                 .build());
 
         eventList.add(Event.builder()
@@ -82,34 +109,34 @@ public class EventDaoImpl implements EventDao {
                 .date("July 22, 2022")
                 .time("11:00")
                 .petAllowed(false)
-                .build()) ;
+                .build());
     }
     @Override
     public Integer getEventSize() {
         return eventList.size();
     }
-
     @Override
     public Page<Event> getEvents(Integer pageSize, Integer page) {
-        pageSize = pageSize == null ? eventList.size() : pageSize; // Use eventList size if pageSize is null
-        page = page == null ? 1 : page; // Default to page 1 if page is null
-
+        pageSize = pageSize == null ? eventList.size() : pageSize;
+        page = page == null ? 1 : page;
         int firstIndex = (page - 1) * pageSize;
-//        int lastIndex = Math.min(firstIndex + pageSize, eventList.size());
-        return new PageImpl<Event>(eventList.subList(firstIndex, firstIndex + pageSize), PageRequest.of(page, pageSize), eventList.size());
-
+        return new PageImpl<>(eventList.subList(firstIndex, firstIndex + pageSize), PageRequest.of(page, pageSize), eventList.size());
     }
 
+    @Override
+    public Event getEventById(Long id) {
+        return eventList.stream()
+                .filter(event -> event.getId().equals(id))
+                .findFirst()
+                .orElse(null);
+    }
 
     @Override
-    public Event getEvent(Long id) {
-        return eventList.stream().filter(event -> event.getId().equals(id)).findFirst().orElse(null);
-    }
-    @Override
-    public Event save(Event event) {
-        event.setId(eventList.get(eventList.size() - 1).getId()+1);
+    public Event saveEvent(Event event) {
+        event.setId(eventList.get(eventList.size() - 1).getId() + 1);
         eventList.add(event);
         return event;
     }
+
 
 }

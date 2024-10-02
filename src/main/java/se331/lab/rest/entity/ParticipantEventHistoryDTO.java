@@ -5,16 +5,20 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @Data
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class ParticipantDTO {
+public class ParticipantEventHistoryDTO {
     Long id;
-    String name;
-    String telNo;  // Participant's phone number
-//    List<EventDTO> eventHistory = new ArrayList<>();  // List of events the participant has attended
+    String category;
+    String title;
+    String description;
+    String location;
+    String date;
+    String time;
+    Boolean petsAllowed;
+    List<EventParticipantDTO> participants;
 }
