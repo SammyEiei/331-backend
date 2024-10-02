@@ -1,6 +1,7 @@
 package se331.lab.rest.service;
 
 import jakarta.transaction.Transactional;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 import se331.lab.rest.dao.EventDao;
@@ -12,12 +13,13 @@ import se331.lab.rest.repository.OrganizerRepository;
 @Service
 public class EventServiceImpl implements EventService {
 
-
+    @Autowired
     final EventDao eventDao;
     final OrganizerDao organizerDao;
 
-    public EventServiceImpl(EventDao eventDao) {
+    public EventServiceImpl(EventDao eventDao, OrganizerDao organizerDao) {
         this.eventDao = eventDao;
+        this.organizerDao = organizerDao;
     }
 
     @Override
