@@ -21,6 +21,7 @@ public class EventDaoDbImpl implements EventDao {
     public Integer getEventSize() {
         return Math.toIntExact(eventRepository.count());
     }
+
     @Override
     public Page<Event> getEvents(Integer pageSize, Integer page) {
         return eventRepository.findAll(PageRequest.of(page - 1, pageSize));
@@ -35,8 +36,10 @@ public class EventDaoDbImpl implements EventDao {
     public Event saveEvent(Event event) {
         return eventRepository.save(event);
     }
+
     @Override
     public Page<Event> getEvents(String title, Pageable page){
-        return eventRepository.findByTitle(title, page);
+        // Updated query to search by title or description
+        return eventRepository.findByTitleContainingOrDescriptionContaining(title, title, page);
     }
 }
