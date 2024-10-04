@@ -23,7 +23,7 @@ public class ParticipantController {
 
     @GetMapping
     public ResponseEntity<List<ParticipantDTO>> getParticipantsWithEvents() {
-        List<Participant> participants = participantService.getAllParticipants();  
+        List<Participant> participants = participantService.getAllParticipants();
 
         // Convert the list of participants to DTOs
         List<ParticipantDTO> participantDTOs = participants.stream()
