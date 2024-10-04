@@ -16,7 +16,6 @@ public interface EventRepository extends JpaRepository<Event, Long> {
 //	•	Now, with the AND condition, the query will only return events where both the title and the description contain the search term.
 
     // New method to include organizer name in the search
-    Page<Event> findByTitleContainingOrDescriptionContainingOrOrganizer_NameContaining(
-        String title, String description, String organizerName, Pageable pageRequest);
-
+    Page<Event> findByTitleIgnoreCaseContainingOrDescriptionIgnoreCaseContainingOrOrganizer_NameIgnoreCaseContaining(
+            String title, String description, String organizerName, Pageable pageRequest);
 }
