@@ -4,6 +4,8 @@ import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.context.ApplicationListener;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 import se331.lab.rest.entity.Event;
 import se331.lab.rest.entity.Organizer;
@@ -11,6 +13,8 @@ import se331.lab.rest.entity.Participant;
 import se331.lab.rest.repository.EventRepository;
 import se331.lab.rest.repository.OrganizerRepository;
 import se331.lab.rest.repository.ParticipantRepository;
+import se331.lab.rest.security.user.Role;
+import se331.lab.rest.security.user.User;
 import se331.lab.rest.security.user.UserRepository;
 
 import java.util.ArrayList;
@@ -28,10 +32,10 @@ public class InitApp implements ApplicationListener<ApplicationReadyEvent> {
     @Override
     @Transactional
     public void onApplicationEvent(ApplicationReadyEvent event) {
-        // Create organizers
-        Organizer org1 = createOrganizer("Tech Conference Co.");
-        Organizer org2 = createOrganizer("Art Festival Org.");
-        Organizer org3 = createOrganizer("Music Event Ltd.");
+        // Create organizers with updated names
+        Organizer org1 = createOrganizer("Camt");
+        Organizer org2 = createOrganizer("Chiangmai");
+        Organizer org3 = createOrganizer("CMU");
 
         // Create participants with updated data
         Participant p1 = createParticipant("Michael Brown", "321-654-0987");
@@ -69,6 +73,8 @@ public class InitApp implements ApplicationListener<ApplicationReadyEvent> {
 
         // Save events (if not already saved in createEvent)
         eventRepository.saveAll(Arrays.asList(event1, event2, event3, event4));
+
+        addUsers();
     }
 
     private Organizer createOrganizer(String name) {
@@ -116,5 +122,45 @@ public class InitApp implements ApplicationListener<ApplicationReadyEvent> {
         for (Participant participant : participants) {
             participant.getEventHistory().add(event);
         }
+    }
+
+    private void addUsers() {
+        PasswordEncoder encoder = new BCryptPasswordEncoder();
+
+        User user1 = User.builder()
+                .username("admin")
+                .password(encoder.encode("admin"))
+                .firstname("admin")
+                .lastname("admin")
+                .email("admin@admin.com")
+                .enabled(true)
+                .build();
+
+        User user2 = User.builder()
+                .username("user")
+                .password(encoder.encode("user"))
+                .firstname("user")
+                .lastname("user")
+                .email("enabled@user.com")
+                .enabled(true)
+                .build();
+
+        User user3 = User.builder()
+                .username("disableUser")
+                .password(encoder.encode("disableUser"))
+                .firstname("disableUser")
+                .lastname("disableUser")
+                .email("disableUser@user.com")
+                .enabled(false)
+                .build();
+
+        user1.getRoles().add(Role.ROLE_USER);
+        user1.getRoles().add(Role.ROLE_ADMIN);
+        user2.getRoles().add(Role.ROLE_USER);
+        user3.getRoles().add(Role.ROLE_USER);
+
+        userRepository.save(user1);
+        userRepository.save(user2);
+        userRepository.save(user3);
     }
 }
