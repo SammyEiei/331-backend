@@ -2,9 +2,10 @@ services:
   db:
     image: mysql
     ports:
-      - 3306:3306
+      - 3307:3306  # เปลี่ยนพอร์ตภายนอกเป็น 3307
     environment:
       MYSQL_ROOT_PASSWORD: password
+
   phpmyadmin:
     image: phpmyadmin
     ports:

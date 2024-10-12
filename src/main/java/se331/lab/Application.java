@@ -18,11 +18,7 @@ public class Application {
         return new WebMvcConfigurer() {
             @Override
             public void addCorsMappings(CorsRegistry registry) {
-                registry.addMapping("/**")  // Apply CORS to all endpoints
-                        .allowedOrigins("http://127.0.0.1:5173", "http://localhost:5173")
-                        .allowedMethods("GET", "POST", "PUT", "DELETE")  // Allow specific methods
-                        .allowCredentials(true)  // Allow credentials like cookies
-                        .exposedHeaders("x-total-count", "Authorization", "Content-Length");  // Expose more headers
+                registry.addMapping("/**").allowedOriginPatterns("*").exposedHeaders("x-total-count");
             }
         };
     }

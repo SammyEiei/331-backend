@@ -30,4 +30,6 @@ public class Event {
             inverseJoinColumns = @JoinColumn(name = "participant_id")
     )
     List<Participant> participants;
+    @ElementCollection
+    List<String> images;
 }

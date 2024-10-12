@@ -1,18 +1,31 @@
 spring:
-  application:
-    name: 331-backend
   profiles:
     active:
       - db
+  application:
+    name: 331-backend
+
+
   datasource:
-    url: jdbc:mysql://localhost:3306/selabdb?createDatabaseIfNotExist=true&autoReconnect=true&characterEncoding=UTF-8&allowMultiQueries=true&useSSL=false&useUnicode=true
+    url: jdbc:mysql://localhost:3306/selabdb?createDatabaseIfNotExist=true&autoReconnect=true&characterEncoding=UTF-8&allowMultiQueries=true&allowPublicKeyRetrieval=true&useSSL=false&useUnicode=true
     driver-class-name: com.mysql.cj.jdbc.Driver
     username: root
     password: password
   jpa:
-    hibernate:
-      ddl-auto: create
-  hibernate:
     properties:
       hibernate:
-        dialect: org.hibernate.dialect.MySQL5InnoDBDialect
+        dialect: org.hibernate.dialect.MySQLDialect
+    hibernate:
+      ddl-auto: update
+
+  servlet:
+    multipart:
+      max-file-size: 10MB
+application:
+  security:
+    jwt:
+      secret-key: 43a9802a51e1db46bd9f6c080f04049efe28b0c42e49fbb64c91c9cd0ca014232a901784b76df0bb86b6560d332e9708483ba8f592e699282462f4325c75db9ce0bb97214ec1f02bdeb5b535e78775f37218a8fe55c77525319bebac1b6cee87536f8155279024b0aa5ef4130f42330fa8842458f9590de3247d4dd4a74dcebd24d860ccae81cf4ece2eef3d0be8ccebe54e6f084462c56058e8177b755d22d03f6947e047c34e5f56e2eaf81b58105b4652544538cfee756c9549745ebd60b2d728caa0b3a6609b43ab40e9eed97086d26319d8c62f7b5e608b9988cc2bb02d55f62e7e8eb6befb0e1406b5907a5b1c4edfe1843588db836ae89a5ee50637e1f05d83049282eaeb4d5cf6e566b91244de31cd3ae7fa60b6f4b2666d0d76878af1698f8059efd5fb7d09facaa40daf03f7a0dce456b5edd2397eb1d72cc4eafec561af71e4990813d44ff0a368a2ca760327bfb1411f347432318c92644004cd8ab9c0998eb373610e8ca04fa08c7a1214d26a0f786fb597dcbdf1d7a3163a5046323e7098e53d379fa0e1d66b12e831cf89e85453ea62e0c6dc97ccb70ce20015f14c3b305c0ccb1cf554447891819ceec32e1d43a1406d7909c0dbec82c8184969c598de95a8f7059e877e2bd5e54da91e2463969d5a7ad8b8f3dc5e0de2965d1fee0bb3c9f63dda1a6edabad8a436548a61a73ffa07e82fd2fddd2221cd45
+      expiration: 86400000
+      refresh-token:
+        expiration: 604800000
+
