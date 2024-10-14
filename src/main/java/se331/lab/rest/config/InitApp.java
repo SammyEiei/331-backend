@@ -23,199 +23,110 @@ import java.util.List;
 
 @Component
 @RequiredArgsConstructor
+@Transactional
 public class InitApp implements ApplicationListener<ApplicationReadyEvent> {
     final EventRepository eventRepository;
     final OrganizerRepository organizerRepository;
     final ParticipantRepository participantRepository;
-    final UserRepository userRepository;
+    private final UserRepository userRepository;
 
     @Override
-    @Transactional
     public void onApplicationEvent(ApplicationReadyEvent event) {
-        // Create organizers with updated names
-        Organizer org1 = createOrganizer("Camt");
-        Organizer org2 = createOrganizer("Chiangmai");
-        Organizer org3 = createOrganizer("CMU");
+        Organizer org1, org2, org3;
+        Participant p1, p2, p3, p4, p5;
 
-        // Create participants with updated data
-        Participant p1 = createParticipant("Michael Brown", "321-654-0987");
-        Participant p2 = createParticipant("Sofia Davis", "789-012-3456");
-        Participant p3 = createParticipant("Liam Johnson", "456-789-0123");
-        Participant p4 = createParticipant("Emma Wilson", "654-321-0987");
-        Participant p5 = createParticipant("Noah Miller", "987-654-3210");
+        org1 = organizerRepository.save(Organizer.builder().name("CAMT").build());
+        org2 = organizerRepository.save(Organizer.builder().name("CMU").build());
+        org3 = organizerRepository.save(Organizer.builder().name("Chiang Mai").build());
 
-        // Store participants in a list for easy access
-        List<Participant> participants = Arrays.asList(p1, p2, p3, p4, p5);
+        p1 = participantRepository.save(Participant.builder().name("Sam").telNo("0600000001").build());
+        p2 = participantRepository.save(Participant.builder().name("Praew").telNo("0600000002").build());
+        p3 = participantRepository.save(Participant.builder().name("Jenny").telNo("0600000003").build());
+        p4 = participantRepository.save(Participant.builder().name("Ikkyu").telNo("0600000004").build());
+        p5 = participantRepository.save(Participant.builder().name("NooKong").telNo("0600000005").build());
 
-        // Create events
-        Event event1 = createEvent(
-                "Technology", "Innovate Tech Expo", "A showcase of the latest tech innovations",
-                "Convention Center", "15th July", "9.00am-5.00pm.", false, org1
-        );
-        Event event2 = createEvent(
-                "Art", "Modern Art Exhibition", "An exhibition of modern art pieces",
-                "Art Gallery", "22nd August", "10.00am-6.00pm.", false, org2
-        );
-        Event event3 = createEvent(
-                "Music", "Summer Music Festival", "Live performances by top artists",
-                "City Park", "5th September", "2.00pm-11.00pm.", true, org3
-        );
-        Event event4 = createEvent(
-                "Technology", "AI & Robotics Conference", "Exploring advancements in AI and robotics",
-                "Tech Hub", "30th October", "8.00am-4.00pm.", false, org1
-        );
+        Event tempEvent;
 
-        // Assign participants to events
-        assignParticipantsToEvent(event1, p1, p2, p3);
-        assignParticipantsToEvent(event2, p2, p4, p5);
-        assignParticipantsToEvent(event3, p1, p3, p5);
-        assignParticipantsToEvent(event4, p3, p4, p5);
 
-        // Save events (if not already saved in createEvent)
-        eventRepository.saveAll(Arrays.asList(event1, event2, event3, event4));
+        tempEvent = eventRepository.save(Event.builder()
+                .category("Academic")
+                .title("Midterm Exam")
+                .description("A time for taking the exam")
+                .location("CAMT Building")
+                .date("3rd Sept")
+                .time("3.00-4.00 pm")
+                .petAllowed(false)
+                .build());
 
-        addUsersAndAssignToOrganizers();
+        tempEvent.setOrganizer(org1);
+        p1.getEventHistory().add(tempEvent);
+        p2.getEventHistory().add(tempEvent);
+        p3.getEventHistory().add(tempEvent);
+        org1.getOwnEvents().add(tempEvent);
+
+
+        tempEvent = eventRepository.save(Event.builder()
+                .category("Academic")
+                .title("Commencement Day")
+                .description("A time for celebration")
+                .location("CMU Convention Hall")
+                .date("21st Jan")
+                .time("8.00-4.00 pm")
+                .petAllowed(false)
+                .build());
+
+        tempEvent.setOrganizer(org2);
+        p1.getEventHistory().add(tempEvent);
+        p2.getEventHistory().add(tempEvent);
+        p3.getEventHistory().add(tempEvent);
+        p4.getEventHistory().add(tempEvent);
+        org2.getOwnEvents().add(tempEvent);
+
+        tempEvent = eventRepository.save(Event.builder()
+                .category("Cultural")
+                .title("Loy Krathong")
+                .description("A time for Krathong")
+                .location("Ping River")
+                .date("21st Nov")
+                .time("8.00-10.00 pm.")
+                .petAllowed(false)
+                .build());
+
+        tempEvent.setOrganizer(org3);
+        p1.getEventHistory().add(tempEvent);
+        p2.getEventHistory().add(tempEvent);
+        p3.getEventHistory().add(tempEvent);
+        org3.getOwnEvents().add(tempEvent);
+
+        tempEvent = eventRepository.save(Event.builder()
+                .category("Cultural")
+                .title("Songkran")
+                .description("Let's Play Water")
+                .location("Chiang Mai Moat")
+                .date("13th April")
+                .time("10.00-6.00 pm.")
+                .petAllowed(true)
+                .build());
+        tempEvent.setOrganizer(org3);
+        p4.getEventHistory().add(tempEvent);
+        p5.getEventHistory().add(tempEvent);
+        org3.getOwnEvents().add(tempEvent);
+        addUser();
+
+        org1.setUser(user1);
+
+        user1.setOrganizer(org1);
+        org2.setUser(user2);
+        user2.setOrganizer(org2);
+        org3.setUser(user3);
+        user3.setOrganizer(org3);
     }
 
-    private Organizer createOrganizer(String name) {
-        Organizer organizer = Organizer.builder()
-                .name(name)
-                .ownEvents(new ArrayList<>())
-                .build();
-        return organizerRepository.save(organizer);
-    }
+    User user1, user2, user3;
 
-    private Participant createParticipant(String name, String telNo) {
-        Participant participant = Participant.builder()
-                .name(name)
-                .telNo(telNo)
-                .eventHistory(new ArrayList<>())
-                .build();
-        return participantRepository.save(participant);
-    }
-
-    private Event createEvent(
-            String category, String title, String description,
-            String location, String date, String time, boolean petAllowed,
-            Organizer organizer
-    ) {
-        Event event = Event.builder()
-                .category(category)
-                .title(title)
-                .description(description)
-                .location(location)
-                .date(date)
-                .time(time)
-                .petAllowed(petAllowed)
-                .participants(new ArrayList<>())
-                .organizer(organizer)
-                .build();
-
-        // Add event to organizer's list
-        organizer.getOwnEvents().add(event);
-
-        return eventRepository.save(event);
-    }
-
-    private void assignParticipantsToEvent(Event event, Participant... participants) {
-        event.getParticipants().addAll(Arrays.asList(participants));
-        for (Participant participant : participants) {
-            participant.getEventHistory().add(event);
-        }
-    }
-
-//    private void addUsers() {
-//        PasswordEncoder encoder = new BCryptPasswordEncoder();
-//
-//        User user1 = User.builder()
-//                .username("admin")
-//                .password(encoder.encode("admin"))
-//                .firstname("admin")
-//                .lastname("admin")
-//                .email("admin@admin.com")
-//                .enabled(true)
-//                .build();
-//
-//        User user2 = User.builder()
-//                .username("user")
-//                .password(encoder.encode("user"))
-//                .firstname("user")
-//                .lastname("user")
-//                .email("enabled@user.com")
-//                .enabled(true)
-//                .build();
-//
-//        User user3 = User.builder()
-//                .username("disableUser")
-//                .password(encoder.encode("disableUser"))
-//                .firstname("disableUser")
-//                .lastname("disableUser")
-//                .email("disableUser@user.com")
-//                .enabled(false)
-//                .build();
-//
-//        user1.getRoles().add(Role.ROLE_USER);
-//        user1.getRoles().add(Role.ROLE_ADMIN);
-//        user2.getRoles().add(Role.ROLE_USER);
-//        user3.getRoles().add(Role.ROLE_USER);
-//
-//        userRepository.save(user1);
-//        userRepository.save(user2);
-//        userRepository.save(user3);
-//    }
-
-//    private void addUsers() {
-//        PasswordEncoder encoder = new BCryptPasswordEncoder();
-//
-//        // ตรวจสอบว่าผู้ใช้ "admin" มีอยู่หรือไม่
-//        if (userRepository.findByUsername("admin").isEmpty()) {
-//            User user1 = User.builder()
-//                    .username("admin")
-//                    .password(encoder.encode("admin"))
-//                    .firstname("admin")
-//                    .lastname("admin")
-//                    .email("admin@admin.com")
-//                    .enabled(true)
-//                    .build();
-//            user1.getRoles().add(Role.ROLE_USER);
-//            user1.getRoles().add(Role.ROLE_ADMIN);
-//            userRepository.save(user1);
-//        }
-//
-//        // ตรวจสอบว่าผู้ใช้ "user" มีอยู่หรือไม่
-//        if (userRepository.findByUsername("user").isEmpty()) {
-//            User user2 = User.builder()
-//                    .username("user")
-//                    .password(encoder.encode("user"))
-//                    .firstname("user")
-//                    .lastname("user")
-//                    .email("enabled@user.com")
-//                    .enabled(true)
-//                    .build();
-//            user2.getRoles().add(Role.ROLE_USER);
-//            userRepository.save(user2);
-//        }
-//
-//        // ตรวจสอบว่าผู้ใช้ "disableUser" มีอยู่หรือไม่
-//        if (userRepository.findByUsername("disableUser").isEmpty()) {
-//            User user3 = User.builder()
-//                    .username("disableUser")
-//                    .password(encoder.encode("disableUser"))
-//                    .firstname("disableUser")
-//                    .lastname("disableUser")
-//                    .email("disableUser@user.com")
-//                    .enabled(false)
-//                    .build();
-//            user3.getRoles().add(Role.ROLE_USER);
-//            userRepository.save(user3);
-//        }
-//    }
-private void addUsersAndAssignToOrganizers() {
-    PasswordEncoder encoder = new BCryptPasswordEncoder();
-
-    // Create users and associate them with organizers
-    if (userRepository.findByUsername("admin").isEmpty()) {
-        User user1 = User.builder()
+    private void addUser() {
+        PasswordEncoder encoder = new BCryptPasswordEncoder();
+        user1 = User.builder()
                 .username("admin")
                 .password(encoder.encode("admin"))
                 .firstname("admin")
@@ -223,18 +134,8 @@ private void addUsersAndAssignToOrganizers() {
                 .email("admin@admin.com")
                 .enabled(true)
                 .build();
-        user1.getRoles().add(Role.ROLE_USER);
-        user1.getRoles().add(Role.ROLE_ADMIN);
-        userRepository.save(user1);
 
-        // Associate this user with an organizer
-        Organizer org1 = organizerRepository.findByName("Camt"); // คุณต้องสร้างเมธอดนี้ใน OrganizerRepository
-        org1.setUser(user1);
-        organizerRepository.save(org1);
-    }
-
-    if (userRepository.findByUsername("user").isEmpty()) {
-        User user2 = User.builder()
+        user2 = User.builder()
                 .username("user")
                 .password(encoder.encode("user"))
                 .firstname("user")
@@ -242,31 +143,25 @@ private void addUsersAndAssignToOrganizers() {
                 .email("enabled@user.com")
                 .enabled(true)
                 .build();
-        user2.getRoles().add(Role.ROLE_USER);
-        userRepository.save(user2);
 
-        // Associate this user with an organizer
-        Organizer org2 = organizerRepository.findByName("Chiangmai"); // คุณต้องสร้างเมธอดนี้ใน OrganizerRepository
-        org2.setUser(user2);
-        organizerRepository.save(org2);
-    }
-
-    if (userRepository.findByUsername("disableUser").isEmpty()) {
-        User user3 = User.builder()
-                .username("disableUser")
-                .password(encoder.encode("disableUser"))
-                .firstname("disableUser")
-                .lastname("disableUser")
+        user3 = User.builder()
+                .username("disabledUser")
+                .password(encoder.encode("disabledUser"))
+                .firstname("disabledUser")
+                .lastname("disabledUser")
                 .email("disableUser@user.com")
-                .enabled(false)
                 .build();
+
+        user1.getRoles().add(Role.ROLE_USER);
+        user1.getRoles().add(Role.ROLE_ADMIN);
+
+        user2.getRoles().add(Role.ROLE_USER);
         user3.getRoles().add(Role.ROLE_USER);
+
+
+        userRepository.save(user1);
+        userRepository.save(user2);
         userRepository.save(user3);
 
-        // Associate this user with an organizer
-        Organizer org3 = organizerRepository.findByName("CMU"); // คุณต้องสร้างเมธอดนี้ใน OrganizerRepository
-        org3.setUser(user3);
-        organizerRepository.save(org3);
     }
-}
 }
