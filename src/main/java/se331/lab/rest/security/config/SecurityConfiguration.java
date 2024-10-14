@@ -13,6 +13,8 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.authentication.logout.LogoutHandler;
 
+import static org.springframework.security.config.Customizer.withDefaults;
+
 @Configuration
 @EnableWebSecurity
 @RequiredArgsConstructor
@@ -28,17 +30,15 @@ public class SecurityConfiguration {
     http.headers((headers) -> {
       headers.frameOptions((frameOptions) -> frameOptions.disable());
     });
-    http
-            .csrf((crsf) -> crsf.disable())
+      http
+
+              .csrf((crsf) -> crsf.disable())
             .authorizeHttpRequests((authorize) -> {
                 authorize.requestMatchers("/api/v1/auth/**").permitAll()
                         .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
-                        .requestMatchers(HttpMethod.GET, "/events").permitAll()
+//                        .requestMatchers(HttpMethod.GET, "/events").permitAll()
                         .requestMatchers(HttpMethod.GET, "/organizers").permitAll()
-                        .requestMatchers(HttpMethod.POST, "/uploadImage").permitAll()  // อนุญาต uploadImage
                         .requestMatchers(HttpMethod.POST, "/events").hasRole("ADMIN")
-                        .requestMatchers(HttpMethod.POST, "/organizers").permitAll()
-
                         .anyRequest().authenticated();
             })
 

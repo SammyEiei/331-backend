@@ -74,7 +74,7 @@ public class InitApp implements ApplicationListener<ApplicationReadyEvent> {
         // Save events (if not already saved in createEvent)
         eventRepository.saveAll(Arrays.asList(event1, event2, event3, event4));
 
-        addUsers();
+        addUsersAndAssignToOrganizers();
     }
 
     private Organizer createOrganizer(String name) {
@@ -164,50 +164,109 @@ public class InitApp implements ApplicationListener<ApplicationReadyEvent> {
 //        userRepository.save(user3);
 //    }
 
-    private void addUsers() {
-        PasswordEncoder encoder = new BCryptPasswordEncoder();
+//    private void addUsers() {
+//        PasswordEncoder encoder = new BCryptPasswordEncoder();
+//
+//        // ตรวจสอบว่าผู้ใช้ "admin" มีอยู่หรือไม่
+//        if (userRepository.findByUsername("admin").isEmpty()) {
+//            User user1 = User.builder()
+//                    .username("admin")
+//                    .password(encoder.encode("admin"))
+//                    .firstname("admin")
+//                    .lastname("admin")
+//                    .email("admin@admin.com")
+//                    .enabled(true)
+//                    .build();
+//            user1.getRoles().add(Role.ROLE_USER);
+//            user1.getRoles().add(Role.ROLE_ADMIN);
+//            userRepository.save(user1);
+//        }
+//
+//        // ตรวจสอบว่าผู้ใช้ "user" มีอยู่หรือไม่
+//        if (userRepository.findByUsername("user").isEmpty()) {
+//            User user2 = User.builder()
+//                    .username("user")
+//                    .password(encoder.encode("user"))
+//                    .firstname("user")
+//                    .lastname("user")
+//                    .email("enabled@user.com")
+//                    .enabled(true)
+//                    .build();
+//            user2.getRoles().add(Role.ROLE_USER);
+//            userRepository.save(user2);
+//        }
+//
+//        // ตรวจสอบว่าผู้ใช้ "disableUser" มีอยู่หรือไม่
+//        if (userRepository.findByUsername("disableUser").isEmpty()) {
+//            User user3 = User.builder()
+//                    .username("disableUser")
+//                    .password(encoder.encode("disableUser"))
+//                    .firstname("disableUser")
+//                    .lastname("disableUser")
+//                    .email("disableUser@user.com")
+//                    .enabled(false)
+//                    .build();
+//            user3.getRoles().add(Role.ROLE_USER);
+//            userRepository.save(user3);
+//        }
+//    }
+private void addUsersAndAssignToOrganizers() {
+    PasswordEncoder encoder = new BCryptPasswordEncoder();
 
-        // ตรวจสอบว่าผู้ใช้ "admin" มีอยู่หรือไม่
-        if (userRepository.findByUsername("admin").isEmpty()) {
-            User user1 = User.builder()
-                    .username("admin")
-                    .password(encoder.encode("admin"))
-                    .firstname("admin")
-                    .lastname("admin")
-                    .email("admin@admin.com")
-                    .enabled(true)
-                    .build();
-            user1.getRoles().add(Role.ROLE_USER);
-            user1.getRoles().add(Role.ROLE_ADMIN);
-            userRepository.save(user1);
-        }
+    // Create users and associate them with organizers
+    if (userRepository.findByUsername("admin").isEmpty()) {
+        User user1 = User.builder()
+                .username("admin")
+                .password(encoder.encode("admin"))
+                .firstname("admin")
+                .lastname("admin")
+                .email("admin@admin.com")
+                .enabled(true)
+                .build();
+        user1.getRoles().add(Role.ROLE_USER);
+        user1.getRoles().add(Role.ROLE_ADMIN);
+        userRepository.save(user1);
 
-        // ตรวจสอบว่าผู้ใช้ "user" มีอยู่หรือไม่
-        if (userRepository.findByUsername("user").isEmpty()) {
-            User user2 = User.builder()
-                    .username("user")
-                    .password(encoder.encode("user"))
-                    .firstname("user")
-                    .lastname("user")
-                    .email("enabled@user.com")
-                    .enabled(true)
-                    .build();
-            user2.getRoles().add(Role.ROLE_USER);
-            userRepository.save(user2);
-        }
-
-        // ตรวจสอบว่าผู้ใช้ "disableUser" มีอยู่หรือไม่
-        if (userRepository.findByUsername("disableUser").isEmpty()) {
-            User user3 = User.builder()
-                    .username("disableUser")
-                    .password(encoder.encode("disableUser"))
-                    .firstname("disableUser")
-                    .lastname("disableUser")
-                    .email("disableUser@user.com")
-                    .enabled(false)
-                    .build();
-            user3.getRoles().add(Role.ROLE_USER);
-            userRepository.save(user3);
-        }
+        // Associate this user with an organizer
+        Organizer org1 = organizerRepository.findByName("Camt"); // คุณต้องสร้างเมธอดนี้ใน OrganizerRepository
+        org1.setUser(user1);
+        organizerRepository.save(org1);
     }
+
+    if (userRepository.findByUsername("user").isEmpty()) {
+        User user2 = User.builder()
+                .username("user")
+                .password(encoder.encode("user"))
+                .firstname("user")
+                .lastname("user")
+                .email("enabled@user.com")
+                .enabled(true)
+                .build();
+        user2.getRoles().add(Role.ROLE_USER);
+        userRepository.save(user2);
+
+        // Associate this user with an organizer
+        Organizer org2 = organizerRepository.findByName("Chiangmai"); // คุณต้องสร้างเมธอดนี้ใน OrganizerRepository
+        org2.setUser(user2);
+        organizerRepository.save(org2);
+    }
+
+    if (userRepository.findByUsername("disableUser").isEmpty()) {
+        User user3 = User.builder()
+                .username("disableUser")
+                .password(encoder.encode("disableUser"))
+                .firstname("disableUser")
+                .lastname("disableUser")
+                .email("disableUser@user.com")
+                .enabled(false)
+                .build();
+        user3.getRoles().add(Role.ROLE_USER);
+        userRepository.save(user3);
+
+        // Associate this user with an organizer
+        Organizer org3 = organizerRepository.findByName("CMU"); // คุณต้องสร้างเมธอดนี้ใน OrganizerRepository
+        org3.setUser(user3);
+        organizerRepository.save(org3);
+    }
+}
 }
